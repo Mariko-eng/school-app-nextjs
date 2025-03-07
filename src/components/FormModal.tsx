@@ -71,16 +71,18 @@ const FormModal = ({
 
       </form>
     ) : type === "create" || type === "update" ? (
-      table === "teacher" ? 
-      <TeacherForm type={type} data={data} /> : 
-      <StudentForm type={type} data={data}/>
+      table === "teacher" ?
+        <TeacherForm type={type} data={data} /> :
+        table === "student" ?
+          <StudentForm type={type} data={data} /> :
+          ("Form not found!")
     )
-    // : type === "create" || type === "update" ? (
-    //   forms[table](type, data)
-    // ) 
-    :(
-      "Form not found!"
-    );
+      // : type === "create" || type === "update" ? (
+      //   forms[table](type, data)
+      // ) 
+      : (
+        "Form not found!"
+      );
   };
 
   return <>
@@ -95,7 +97,7 @@ const FormModal = ({
       open && (
         <div className="w-screen h-screen absolute top-0 left-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white p-4 rounded-md relative w-[90%] md:w-[70%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%]">
-            
+
             <Form />
 
             <div
