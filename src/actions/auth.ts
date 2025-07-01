@@ -1,26 +1,58 @@
+'use server'
+
 import { SigninFormSchema, SignInFormState,  } from "@/lib/definitions"
 import { SignupFormSchema, SignUpFormState,  } from "@/lib/definitions"
 import { ResetPasswordFormSchema,  } from "@/lib/definitions"
 import { ResetPasswordConfirmFormSchema } from "@/lib/definitions"
-import { createSession, deleteSession, getSession } from "@/app/auth/session"
+import prisma from "@/lib/prisma"
+import { createSession, deleteSession, getSession } from "@/lib/session"
 import { redirect } from "next/navigation"
 
-export async function signin(prevState: SignInFormState, formData: FormData) {
+// It returns a SignInFormState object,
+export async function signin(prevState: SignInFormState | undefined, formData: FormData): Promise<SignInFormState> {
+// export async function signin(prevState: SignInFormState, formData: FormData) {
     // Validate form fields
     const validatedFields = SigninFormSchema.safeParse({
-        email: formData.get('email'),
+        username: formData.get('username'),
         password: formData.get('password'),
     })
 
     // If any form fields are invalid, return early
     if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-        }
+        console.log({errors: validatedFields.error.flatten().fieldErrors, message : ""} )
+
+        const err = { message : "" }
+
+        return err
+        // return {errors: validatedFields.error.flatten().fieldErrors, message : ""}
+        // return {
+        //     // errors: validatedFields.error.flatten().fieldErrors,
+        //     // message: "Failed"
+        // }
     }
 
     // Simulate an API call with a delay (you can replace this with actual API logic)
-    await new Promise((resolve) => setTimeout(resolve, 2000))  // Simulate 2 seconds delay
+    // await new Promise((resolve) => setTimeout(resolve, 2000))  // Simulate 2 seconds delay
+
+    const username = formData.get('username') as string;
+    const password = formData.get('password') as string;
+
+    // 2. Find the user by username
+    const user = await prisma.user.findUnique({
+        where: { username : username },
+    });
+
+    // 3. Check if the user exists and if the password matches
+    if (!user) {
+        console.log("User not found")
+        return {
+            message : "User not found!"
+        };
+        return { 
+            errors: { username: ['Username not found'] },
+            // message : "User not found!"
+        };
+    }
 
     // Current steps:
     // 4. Create user session

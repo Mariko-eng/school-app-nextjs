@@ -1,6 +1,26 @@
 import { z } from 'zod'
 
 export const SigninFormSchema = z.object({
+    username: z
+        .string()
+        .min(2, { message: 'Username must be at least 2 characters long.' })
+        .trim(),
+    password: z
+        .string()
+        .min(8, { message: 'Be at least 8 characters long' })
+        // .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
+        // .regex(/[0-9]/, { message: 'Contain at least one number.' })
+        // .regex(/[^a-zA-Z0-9]/, {
+        //     message: 'Contain at least one special character.',
+        // })
+        .trim(),
+})
+
+export const SignupFormSchema = z.object({
+    name: z
+        .string()
+        .min(2, { message: 'Name must be at least 2 characters long.' })
+        .trim(),
     email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
     password: z
         .string()
@@ -23,23 +43,6 @@ export const SigninFormSchema = z.object({
 }).refine((data) => data.password === data.password2, {
     message: "Passwords must match",
     path: ['password2'], // This will associate the error with the `password2` field
-})
-
-export const SignupFormSchema = z.object({
-    name: z
-        .string()
-        .min(2, { message: 'Name must be at least 2 characters long.' })
-        .trim(),
-    email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
-    password: z
-        .string()
-        .min(8, { message: 'Be at least 8 characters long' })
-        .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
-        .regex(/[0-9]/, { message: 'Contain at least one number.' })
-        .regex(/[^a-zA-Z0-9]/, {
-            message: 'Contain at least one special character.',
-        })
-        .trim(),
 })
 
 export const ResetPasswordFormSchema = z.object({
@@ -70,10 +73,17 @@ export const ResetPasswordConfirmFormSchema = z.object({
     path: ['password2'], // This will associate the error with the `password2` field
 })
 
-export type SignInFormState =
+export type SignInFormState = {
+    errors? : {
+        username?: string[]
+        password?: string[]
+    }
+    message?: string};
+
+export type SignInFormState2 =
     | {
         errors?: {
-            email?: string[]
+            username?: string[]
             password?: string[]
         }
         message?: string
